@@ -58,7 +58,21 @@ class CPU:
 
         with open(instructions, "r") as f:
 
-            for line in f:
+            for l in f:
+                
+
+                try:
+                    semi_index = l.index(";")
+                    line = l[:semi_index]
+                except:
+                    line = l
+
+                if line.strip() == "":
+                    opcode = self.OPCODES["HLT"]
+                    print(opcode)
+                    continue
+                
+
 
                 instruction = line.replace("\n","")
                 

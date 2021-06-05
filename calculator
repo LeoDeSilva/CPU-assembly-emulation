@@ -6,13 +6,28 @@ INP
 STA R1
 LAD +
 CMP R2
-JNE 13
+JNE 13 ; if not + then check if -
 ADD R0, R1
 OUT
-JMP 18
+JMP 33 ; jump to end
 LAD -
 CMP R2
-JNE 18
+JNE 18 ; if not - then jump to next check
 SUB R0,R1
 OUT
+LAD *
+CMP R2
+JNE 33 ; if not * jump to end
+LAD R0
+STA R3 ; copy R0 to R3 which will hold the sum
+LAD 1
+CMP R1 ; check for while loop,
+JIE 31 ; end loop if looped as many times as inputed in R1
+ADD R0,R3 
+STA R3 ; add to the total
+SUB R1,1 ; decrease the counter
+STA R1
+JMP 23 ; return to loop check 
+LAD R3 ; load answer
+OUT ; output answer
 HLT
