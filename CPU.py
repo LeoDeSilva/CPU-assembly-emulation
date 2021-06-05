@@ -23,6 +23,7 @@ OPCODES = {
     "JIG":"1111",
     "JGE":"1112",
     "JLE":"1121",
+    "PRT":"2111",
 }
 
 # work out base to store the program in the last registers of memory
@@ -236,6 +237,26 @@ class CPU:
             else:
                 print(self.ACC)
 
+        if op.op == "PRT":
+            # if printing a register print data from register
+            
+            if len(op.operand) > 0:
+                if op.operand[0] in ("92","47"):
+                    print("")
+                    return
+                elif op.operand[0] == "R":
+                    register = op.operand[0][1:]
+                    print(chr(self.REGISTERS[int(register)]), end="",flush=True)
+                else:
+                    print(chr(int(op.operand[0])), end="", flush=True)
+            # if no operand print ACC
+            else:
+                val = self.ACC
+                if val in (92,47):
+                    print("")
+                    return
+                print(chr(self.ACC), end="",flush=True)
+
         # store value in the ACC
         if op.op == "STA":
             register = op.operand[0][1:]    
@@ -351,6 +372,7 @@ class CPU:
 
 
         self.excecute(decoded)
+        print("")
         print(self.REGISTERS)
 
 

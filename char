@@ -1,3 +1,13 @@
-STA R0, D
-LAD R0
-OUT
+PRT H
+PRT e
+PRT l
+PRT l
+PRT o
+LAD /n
+PRT 
+PRT W
+PRT o
+PRT r
+PRT l
+PRT d
+
