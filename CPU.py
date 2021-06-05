@@ -5,6 +5,8 @@ ACC = 0
 
 REGISTERS = [0] * 255
 
+# ran out of binary, cheated a bit and used another digit instead of refactoring
+# code
 OPCODES = {
     "OUT":"0001",
     "STA":"0010",
@@ -16,7 +18,11 @@ OPCODES = {
     "JIE":"1001",
     "CMP":"1010",
     "HLT":"1011",
-    "INP":"1101"
+    "INP":"1101",
+    "JIL":"1110",
+    "JIG":"1111",
+    "JGE":"1112",
+    "JLE":"1121",
 }
 
 # work out base to store the program in the last registers of memory
@@ -74,12 +80,17 @@ class CPU:
                         continue
                     
                     # if register 
+                    # TODO: CHARACTER INPUT
                     if data[0] == "R":
                         # make binary data 8bit
                         formatted_data = format(int(data[1:]),"08b")
                         # set leading bit to 1 to represent register
                         formatted_data = "1" + formatted_data
 
+                        bin_operands += formatted_data
+                    elif not data[0].isnumeric():
+                        asc = ord(data[0])
+                        formatted_data = format(asc, "08b")
                         bin_operands += formatted_data
                     else:
                         # make binary data 8bit
@@ -223,6 +234,9 @@ class CPU:
                 if data[0] == "R":
                     data_register = data[1:]
                     data = self.REGISTERS[int(data_register)]
+                elif not data[0].isnumeric():
+                    char = data[0]
+                    data = ord(char)
                     
                 self.REGISTERS[int(register)] = data 
 
@@ -234,12 +248,18 @@ class CPU:
                 if n[0] == "R":
                     register = n[1:]
                     self.ACC = self.REGISTERS[int(register)]
+                elif not n[0].isnumeric():
+                    char = n[0]
+                    self.ACC = ord(char)
                 else:
                     self.ACC = int(n)
 
 
         if op.op == "INP":
-            self.ACC = input(":")
+            data = input(":")
+            if not data[0].isnumeric():
+                data = ord(data[0])
+            self.ACC = data
 
     
     def excecute(self, instructions):
@@ -267,7 +287,26 @@ class CPU:
 
             # jump not if equal to 0: equal to 1
             if op.op == "JNE":
-                if self.REGISTERS[254] == 1:
+                if self.REGISTERS[254] != 0:
+                    self.PC = int(op.operand[0]) - 1
+
+            if op.op == "JIG":
+                if self.REGISTERS[254] > 0:
+                    self.PC = int(op.operand[0]) - 1
+            
+
+            if op.op == "JIL":
+                if self.REGISTERS[254] < 0:
+                    self.PC = int(op.operand[0]) - 1
+            
+
+            if op.op == "JGE":
+                if self.REGISTERS[254] >= 0:
+                    self.PC = int(op.operand[0]) - 1
+
+
+            if op.op == "JLE":
+                if self.REGISTERS[254] <= 0:
                     self.PC = int(op.operand[0]) - 1
 
             if op.op == "CMP":
@@ -282,7 +321,7 @@ class CPU:
 
                 # if the value in the ACC and the value bring compared are the same
                 # set the result to 0 else set it to 1
-                res = 0 if val == int(self.ACC) else 1
+                res = val - int(self.ACC) 
 
                 # the last register represents the EAX register and is where 
                 # ther result of comparisons are stored

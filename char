@@ -1,0 +1,3 @@
+STA R0, D
+LAD R0
+OUT
